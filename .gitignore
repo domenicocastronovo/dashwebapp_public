@@ -1,0 +1,10 @@
+.spyproject
+__pycache__
+archive
+venv
+*.pyc
+.env
+.DS_Store
+weather_scrape_agg.py
+hist_data.py
+fc12h_data.py

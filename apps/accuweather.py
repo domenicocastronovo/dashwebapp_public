@@ -33,19 +33,18 @@ TODO:
 PATH = pathlib.Path(__file__).parent
 DATA_PATH = PATH.joinpath("../datasets").resolve()
 
-dfh = pd.read_csv(DATA_PATH.joinpath("hist__.csv"), index_col=0)
+dfh = pd.read_csv(DATA_PATH.joinpath("hist.csv"), index_col=0)
 dfh.index = pd.to_datetime(dfh.index)
+dfh = dfh.loc[~dfh.index.duplicated()]
 
-# Be careful
-# import datetime as dt
-# dfh.index = dfh.reset_index()['index'].apply(lambda x: x + dt.timedelta(hours=10))
 
-dff = pd.read_csv(DATA_PATH.joinpath("fc__.csv"), index_col=0)
+dff = pd.read_csv(DATA_PATH.joinpath("fc.csv"), index_col=0)
 dff.index = pd.to_datetime(dff.index)
 dff = dff.add_prefix('fc_')
+dff = dff.loc[~dff.index.duplicated(keep='last')] # to be fixed
+
 
 df_merged = pd.merge(dfh, dff, left_on=dfh.index, right_on=dff.index, how='inner').rename(columns = {'key_0':'DateTimeCET'}).set_index('DateTimeCET')
-
 
 
 #%%

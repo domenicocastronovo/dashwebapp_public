@@ -1,5 +1,4 @@
 .spyproject
-__pycaache__
-archive
-.__pyc
-.pyc
+__pycache__
+*.pyc
+.env

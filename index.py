@@ -28,7 +28,7 @@ def display_page(pathname):
     # if pathname == '/apps/global_sales':
     #     return global_sales.layout
     else:
-        return 'Choose a page above :)' #accuweather.layout
+        return 'Choose a page above :) ||| credits: Domenico Castronovo' #accuweather.layout
 
 
 if __name__ == '__main__':

@@ -33,19 +33,20 @@ TODO:
 PATH = pathlib.Path(__file__).parent
 DATA_PATH = PATH.joinpath("../datasets").resolve()
 
-dfh = pd.read_csv(DATA_PATH.joinpath("hist__.csv"), index_col=0)
+dfh = pd.read_csv(DATA_PATH.joinpath("hist.csv"), index_col=0)
 dfh.index = pd.to_datetime(dfh.index)
+dfh = dfh.loc[~dfh.index.duplicated()]
+dfh.sort_index(inplace=True)
 
-# Be careful
-# import datetime as dt
-# dfh.index = dfh.reset_index()['index'].apply(lambda x: x + dt.timedelta(hours=10))
-
-dff = pd.read_csv(DATA_PATH.joinpath("fc__.csv"), index_col=0)
+dff = pd.read_csv(DATA_PATH.joinpath("fc.csv"), index_col=0)
 dff.index = pd.to_datetime(dff.index)
 dff = dff.add_prefix('fc_')
+dff = dff.loc[~dff.index.duplicated(keep='last')] # to be fixed
+dff.sort_index(inplace=True)
+
 
 df_merged = pd.merge(dfh, dff, left_on=dfh.index, right_on=dff.index, how='inner').rename(columns = {'key_0':'DateTimeCET'}).set_index('DateTimeCET')
-
+df_merged.sort_index(inplace=True)
 
 
 #%%
@@ -77,11 +78,11 @@ layout = html.Div([
     #     ), className='six columns'),
         
         html.Div(dcc.DatePickerRange(id='date-range',
-                                     min_date_allowed=dff.index.min(),
+                                     min_date_allowed=dfh.index.min(),
                                      max_date_allowed=dff.index.max(),
                                      initial_visible_month=dff.index.min(),
                                      end_date=dff.index.max(),
-                                     start_date=dff.index.min()
+                                     start_date=dfh.index.min()
         ), className='six columns'),
         
     ], className='row'),
@@ -144,10 +145,10 @@ def comparison(city_chosen, start_date, end_date):
 
 def historical(city_chosen, start_date, end_date):
     # print(city_chosen)
-    dropdown_value = [i for i in df_merged.columns if str(city_chosen) in i]
+    dropdown_value = [i for i in dfh.columns if str(city_chosen) in i]
     # print(dropdown_value)
-    df_merged_copy = df_merged.copy()
-    df_merged_copy = df_merged_copy[dropdown_value]
+    df_merged_copy = dfh.copy()
+    df_merged_copy = dfh[dropdown_value]
     
     df_merged_copy = df_merged_copy.loc[(df_merged_copy.index >= start_date) & (df_merged_copy.index <= end_date)]
     # print(df_merged_copy)

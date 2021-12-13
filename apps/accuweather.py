@@ -49,14 +49,6 @@ df_merged = pd.merge(dfh, dff, left_on=dfh.index, right_on=dff.index, how='inner
 df_merged.sort_index(inplace=True)
 
 
-#%%
-# city_chosen='Athens'
-# dropdown_value = [i for i in df_merged.columns if str(city_chosen) in i]
-# df_merged_copy = df_merged[dropdown_value]
-
-# fig = px.line(df_merged_copy, x=df_merged_copy.index, y=[i for i in df_merged_copy.columns], title='test plot')
-# fig.write_html(r"C:\Users\castr\OneDrive\Desktop\repos\file.html")
-
 
 #%% Dash-Plotly
 

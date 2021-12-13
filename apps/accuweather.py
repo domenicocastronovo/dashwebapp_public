@@ -36,24 +36,18 @@ DATA_PATH = PATH.joinpath("../datasets").resolve()
 dfh = pd.read_csv(DATA_PATH.joinpath("hist.csv"), index_col=0)
 dfh.index = pd.to_datetime(dfh.index)
 dfh = dfh.loc[~dfh.index.duplicated()]
-
+dfh.sort_index(inplace=True)
 
 dff = pd.read_csv(DATA_PATH.joinpath("fc.csv"), index_col=0)
 dff.index = pd.to_datetime(dff.index)
 dff = dff.add_prefix('fc_')
 dff = dff.loc[~dff.index.duplicated(keep='last')] # to be fixed
+dff.sort_index(inplace=True)
 
 
 df_merged = pd.merge(dfh, dff, left_on=dfh.index, right_on=dff.index, how='inner').rename(columns = {'key_0':'DateTimeCET'}).set_index('DateTimeCET')
+df_merged.sort_index(inplace=True)
 
-
-#%%
-# city_chosen='Athens'
-# dropdown_value = [i for i in df_merged.columns if str(city_chosen) in i]
-# df_merged_copy = df_merged[dropdown_value]
-
-# fig = px.line(df_merged_copy, x=df_merged_copy.index, y=[i for i in df_merged_copy.columns], title='test plot')
-# fig.write_html(r"C:\Users\castr\OneDrive\Desktop\repos\file.html")
 
 
 #%% Dash-Plotly

@@ -15,16 +15,23 @@ from app import app
 
 import plotly.graph_objects as go
 
-#%% Page Structure
+#%% Page Structure and TODO
 
 '''
-    Headline
-city filter
-comparison plot
-historical plot
+Structure and TODOs
+
+- Headline
+- Description explaining what they are seeing and why I did it.
+- city filter | DateTime Filter.
+- comparison plot.
+- historical plot (?) Historical is already in comparison plot. Maybe pull more historical if api allows.
+- Table of errors and more statistics.
+- Pie chart with MAE of all cities, maybe not pie, but bar chart or something.
+
 
 TODO:
-    insert start and end date
+    - make sure that missing datetime frame will be displayed as empty.
+    This is important in case of impossibility of data pulling.
 '''
 
 #%% Allign DataFrames

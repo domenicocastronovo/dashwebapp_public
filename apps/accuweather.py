@@ -44,10 +44,15 @@ dff = dff.add_prefix('fc_')
 dff = dff.loc[~dff.index.duplicated(keep='last')] # to be fixed
 dff.sort_index(inplace=True)
 
+df_merged_noindex = pd.merge(dfh, dff, left_on=dfh.index, right_on=dff.index, how='inner').rename(columns = {'key_0':'DateTimeCET'}).set_index('DateTimeCET')
+df_merged_noindex.sort_index(inplace=True)
 
-df_merged = pd.merge(dfh, dff, left_on=dfh.index, right_on=dff.index, how='inner').rename(columns = {'key_0':'DateTimeCET'}).set_index('DateTimeCET')
-df_merged.sort_index(inplace=True)
-
+df_merged = pd.DataFrame(index=pd.date_range(start=df_merged_noindex.index.min(),
+                                             end=df_merged_noindex.index.max(),
+                                             freq='H'))
+df_merged = pd.merge(df_merged, df_merged_noindex, left_on=df_merged.index, 
+                     right_on=df_merged_noindex.index, how='outer').rename(columns = {'key_0':'DateTimeCET'}).set_index('DateTimeCET')
+df_merged.fc_query = df_merged.fc_query.ffill()
 
 
 #%% Dash-Plotly

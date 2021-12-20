@@ -18,13 +18,13 @@ if __name__ == '__main__':
     path_fileh = pathlib.Path(__file__).parents[1].joinpath("./accuweather.out").resolve()
     fileh = logging.FileHandler(str(path_fileh))
     logger.addHandler(fileh)
-    logger.info('running {}'.format(dt.datetime.now()))
+    logger.info('running fc12h {}'.format(dt.datetime.now()))
     
     try:
         data_location_formatted = wsa.read_cities_params()
     
-        selected_cities = ['Athens', 'Paris', 'Rome', 'Berlin']
-        # selected_cities = ['Athens']
+        selected_cities = ['Athens', 'Paris', 'Rome', 'Berlin', 'Hanoi', 'Rio de Janeiro', 
+                           'London', 'Lisbon']
         countryKey = {k: v['Key'] for k,v in data_location_formatted.items() if k in selected_cities}
         
         fc_df = wsa.fc12h(wsa.apikey, countryKey)

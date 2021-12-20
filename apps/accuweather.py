@@ -31,7 +31,9 @@ Structure and TODOs
 '''
 #%% Alpha ISO 3
 
-iso = {'Athens':'GRC', 'Berlin':'DEU', 'Paris':'FRA', 'Rome':'ITA'}
+iso = {'Athens':'GRC', 'Berlin':'DEU', 'Paris':'FRA', 'Rome':'ITA',
+       'Hanoi':'VNM', 'Rio de Janeiro':'BRA', 'London':'GBR', 'Lisbon':'PRT'}
+
 
 #%% Prepare DataFrames
 
@@ -64,8 +66,23 @@ df_merged.fc_query = df_merged.fc_query.ffill()
 #%% Dash-Plotly
 
 layout = html.Div([
+    html.P('''
+           My personal and professional interest in temperature forecasts inspired me 
+           to create this dashboard. The purpose of this project is to evaluate the 
+           accuracy of temperature forecasts provided by accuweather.
+           Send me a message to the following profile if you notice any error or simply for 
+           any feedback: https://www.linkedin.com/in/domenico-castronovo/ .
+           If you are interested in the project's backend, please clone the following 
+           repository: https://github.com/domenicocastronovo/dashwebapp_public .
+           '''),
     html.H1('Accuweather Project', style={"textAlign": "center"}),
-    html.H1('///', style={"textAlign": "center"}), 
+    html.H5('''
+            This Section shows the comparison between 12 hours forecast and historical data.
+            ''', style={"textAlign": "center"}), 
+    html.H6('''
+            Below you can choose the time-frame and the city to visualize for this section.
+            ''', style={"textAlign": "center"}), 
+
     html.Div([
         html.Div(dcc.Dropdown(
             id='city-dropdown', value='Athens', clearable=False,
@@ -88,8 +105,14 @@ layout = html.Div([
     
     
     # dcc.Graph(id='plot-historical', figure={}),
-    
-    html.H1('///', style={"textAlign": "center"}), 
+    html.H1('______', style={"textAlign": "center"}),
+    html.H5('''
+            This Section shows descriptive statistics for both 12 hours forecast and historical data.
+            ''', style={"textAlign": "center"}), 
+    html.H6('''
+            Below you can choose the time-frame and the cities to visualize for this section.
+            ''', style={"textAlign": "center"}), 
+
     html.Div([
         html.Div(dcc.Dropdown(
             id='city-dropdown-multiple', value=['Athens', 'Berlin', 'Paris', 'Rome'], clearable=False,
@@ -135,7 +158,8 @@ def comparison(city_chosen, start_date, end_date):
     for query in df_merged_copy.fc_query.unique():
         fig.add_vline(x=pd.to_datetime(query), line_width=2, line_dash="dash", line_color="green")
         
-    
+    fig.update_layout(yaxis_title = 'Celsius Degrees', 
+                      title = 'Front 12 Hours Forecast and Historical Data Comparison ***The green vertial line represents the Datetime when the 12 hours forecast was pulled from the data provider***')
     
     return fig
 
@@ -179,7 +203,8 @@ def box_plot(city_list, start_date, end_date):
     for city in dropdown_value:
         box.add_trace(go.Box(y=df_merged_copy[city], name=city))
     
-    box.update_layout(yaxis_title= str(dropdown_value) + 'Box Plot')
+    box.update_layout(yaxis_title = str(dropdown_value) + 'Box Plot', 
+                      title = 'Historical Data BoxPlot')
         
     return box
 
@@ -242,5 +267,10 @@ def table_statistics(city_list, start_date, end_date):
                           title='Choropleth MAE Map',
                           color_continuous_scale=px.colors.sequential.Turbo)
     choro.update_layout(margin=dict(l=60, r=60, t=50, b=50))
+    
+    
+    described.update_layout(title = 'TimeSeries Descriptive Statistics')
+    maes.update_layout(title = '12 Hours Forecast - Historical Mean Absolute Error')
+    choro.update_layout(title = 'MAE Choropleth Map')
     
     return described, maes, choro

@@ -13,8 +13,8 @@ from apps import accuweather#, global_sales
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div([
-        dcc.Link('Accuweather', href='/apps/accuweather'),
-        # dcc.Link('Other Products', href='/apps/global_sales'),
+        html.H6('NavBar ->  ', style={'display':'inline-block'}),
+        dcc.Link('Accuweather', href='/apps/accuweather', style={'display':'inline-block'}),
     ], className="row"),
     html.Div(id='page-content', children=[])
 ])
@@ -25,10 +25,13 @@ app.layout = html.Div([
 def display_page(pathname):
     if pathname == '/apps/accuweather':
         return accuweather.layout
-    # if pathname == '/apps/global_sales':
-    #     return global_sales.layout
     else:
-        return 'Choose a page above :) ||| credits: Domenico Castronovo' #accuweather.layout
+        return '''
+    Choose a page above :) ||| 
+    credits: Domenico Castronovo ||| 
+    LinkedIn: https://www.linkedin.com/in/domenico-castronovo/ |||
+    GitHub: https://github.com/domenicocastronovo/
+    '''
 
 
 if __name__ == '__main__':

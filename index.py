@@ -25,10 +25,13 @@ app.layout = html.Div([
 def display_page(pathname):
     if pathname == '/apps/accuweather':
         return accuweather.layout
-    # if pathname == '/apps/global_sales':
-    #     return global_sales.layout
     else:
-        return 'Choose a page above :) ||| Credits: Domenico Castronovo' #accuweather.layout
+        return '''
+    Choose a page above :) ||| 
+    credits: Domenico Castronovo ||| 
+    LinkedIn: https://www.linkedin.com/in/domenico-castronovo/ |||
+    GitHub: https://github.com/domenicocastronovo/
+    '''
 
 
 if __name__ == '__main__':

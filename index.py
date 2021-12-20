@@ -13,8 +13,8 @@ from apps import accuweather
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div([
-        dcc.Link('Accuweather', href='/apps/accuweather'),
-        # dcc.Link('Other Products', href='/apps/global_sales'),
+        html.H6('NavBar ->  ', style={'display':'inline-block'}),
+        dcc.Link('Accuweather', href='/apps/accuweather', style={'display':'inline-block'}),
     ], className="row"),
     html.Div(id='page-content', children=[])
 ])

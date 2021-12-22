@@ -99,7 +99,7 @@ layout = html.Div([
                                      max_date_allowed=dff.index.max(),
                                      initial_visible_month=dff.index.min(),
                                      end_date=dff.index.max(),
-                                     start_date=dfh.index.min() - dt.timedelta(days=7)
+                                     start_date=dfh.index.max() - dt.timedelta(days=7)
         ), className='six columns'),
         
     ], className='row'),

@@ -10,8 +10,10 @@ from dash import html
 from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
+import datetime as dt
 import pathlib
 from app import app
+
 
 import plotly.graph_objects as go
 
@@ -96,7 +98,7 @@ layout = html.Div([
                                      max_date_allowed=dff.index.max(),
                                      initial_visible_month=dff.index.min(),
                                      end_date=dff.index.max(),
-                                     start_date=dfh.index.min()
+                                     start_date=dfh.index.max() - dt.timedelta(days=7)
         ), className='six columns'),
         
     ], className='row'),

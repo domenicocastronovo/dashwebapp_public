@@ -76,6 +76,8 @@ layout = html.Div([
            repository: https://github.com/domenicocastronovo/dashwebapp_public .
            '''),
     html.H1('Accuweather Project', style={"textAlign": "center"}),
+    html.H4('Data is updated every 12 hours, at 8am and 8pm. The process is automated but in my local machine which causes missing data when access to internet is limited :/', style={"textAlign": "left"}),
+    html.H1('______', style={"textAlign": "center"}),
     html.H5('''
             This Section shows the comparison between 12 hours forecast and historical data.
             ''', style={"textAlign": "center"}), 
@@ -96,7 +98,7 @@ layout = html.Div([
                                      max_date_allowed=dff.index.max(),
                                      initial_visible_month=dff.index.min(),
                                      end_date=dff.index.max(),
-                                     start_date=dfh.index.min()
+                                     start_date=dfh.index.min() - dt.timedelta(days=7)
         ), className='six columns'),
         
     ], className='row'),

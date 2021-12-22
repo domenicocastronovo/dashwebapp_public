@@ -70,7 +70,7 @@ layout = html.Div([
            My personal and professional interest in temperature forecasts inspired me 
            to create this dashboard. The purpose of this project is to evaluate the 
            accuracy of temperature forecasts provided by accuweather.
-           Send me a message to the following profile if you notice any error or simply for 
+           Send me a message to the following profile if you notice any error or, simply, for 
            any feedback: https://www.linkedin.com/in/domenico-castronovo/ .
            If you are interested in the project's backend, please clone the following 
            repository: https://github.com/domenicocastronovo/dashwebapp_public .
@@ -159,7 +159,7 @@ def comparison(city_chosen, start_date, end_date):
         fig.add_vline(x=pd.to_datetime(query), line_width=2, line_dash="dash", line_color="green")
         
     fig.update_layout(yaxis_title = 'Celsius Degrees', 
-                      title = 'Front 12 Hours Forecast and Historical Data Comparison ***The green vertial line represents the Datetime when the 12 hours forecast was pulled from the data provider***')
+                      title = 'Front 12 Hours Forecast and Historical Temperature (Celsius) Data Comparison ***The green vertical line represents the Datetime at which the 12 hours forecast was pulled from the data provider***')
     
     return fig
 
@@ -203,8 +203,8 @@ def box_plot(city_list, start_date, end_date):
     for city in dropdown_value:
         box.add_trace(go.Box(y=df_merged_copy[city], name=city))
     
-    box.update_layout(yaxis_title = str(dropdown_value) + 'Box Plot', 
-                      title = 'Historical Data BoxPlot')
+    box.update_layout(yaxis_title = str(dropdown_value), 
+                      title = 'Historical Temperature (Celsius) Data BoxPlot')
         
     return box
 
@@ -270,7 +270,7 @@ def table_statistics(city_list, start_date, end_date):
     
     
     described.update_layout(title = 'TimeSeries Descriptive Statistics')
-    maes.update_layout(title = '12 Hours Forecast - Historical Mean Absolute Error')
+    maes.update_layout(title = '12 Hours Forecast - Historical Temperature (Celsius)  Mean Absolute Error')
     choro.update_layout(title = 'MAE Choropleth Map')
     
     return described, maes, choro

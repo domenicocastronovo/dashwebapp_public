@@ -71,7 +71,7 @@ layout = html.Div([
            My personal and professional interest in temperature forecasts inspired me 
            to create this dashboard. The purpose of this project is to evaluate the 
            accuracy of temperature forecasts provided by accuweather.
-           Send me a message to the following profile if you notice any error or simply for 
+           Send me a message to the following profile if you notice any error or, simply, for 
            any feedback: https://www.linkedin.com/in/domenico-castronovo/ .
            If you are interested in the project's backend, please clone the following 
            repository: https://github.com/domenicocastronovo/dashwebapp_public .

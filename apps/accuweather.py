@@ -101,7 +101,7 @@ layout = html.Div([
                                      max_date_allowed=dff.index.max(),
                                      initial_visible_month=dff.index.min(),
                                      end_date=dff.index.max(),
-                                     start_date=dfh.index.max() - dt.timedelta(days=7*5)
+                                     start_date=dfh.index.max() - dt.timedelta(days=7*4)
         ), className='six columns'),
         
     ], className='row'),

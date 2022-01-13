@@ -24,7 +24,8 @@ if __name__ == '__main__':
         data_location_formatted = wsa.read_cities_params()
     
         selected_cities = ['Athens', 'Paris', 'Rome', 'Berlin', 'Hanoi', 'Rio de Janeiro', 
-                           'London', 'Lisbon']
+                           'London', 'Lisbon', 'Bangkok', 'Dublin', 'Cape Town', 'Warsaw',
+                           'Tokyo', 'Minsk', 'Seoul']
         countryKey = {k: v['Key'] for k,v in data_location_formatted.items() if k in selected_cities}
     
         hist_df = wsa.hist24h(wsa.apikey, countryKey)

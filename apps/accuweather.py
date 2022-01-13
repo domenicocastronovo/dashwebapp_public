@@ -120,7 +120,7 @@ layout = html.Div([
 
     html.Div([
         html.Div(dcc.Dropdown(
-            id='city-dropdown-multiple', value=['Athens', 'Berlin', 'Paris', 'Rome'], clearable=False,
+            id='city-dropdown-multiple', value=[i for i in dfh.columns], clearable=False,
             options=[{'label': x, 'value': x} for x in sorted([i for i in dfh.columns])],
             multi=True
         ), className='six columns'),        

@@ -33,7 +33,9 @@ Structure and TODOs
 #%% Alpha ISO 3
 
 iso = {'Athens':'GRC', 'Berlin':'DEU', 'Paris':'FRA', 'Rome':'ITA',
-       'Hanoi':'VNM', 'Rio de Janeiro':'BRA', 'London':'GBR', 'Lisbon':'PRT'}
+       'Hanoi':'VNM', 'Rio de Janeiro':'BRA', 'London':'GBR', 'Lisbon':'PRT',
+       'Bangkok': 'THA', 'Dublin': 'IRL', 'Cape Town': 'ZAF', 'Warsaw': 'POL',
+       'Tokyo': 'JPN', 'Minsk': 'BLR', 'Seoul': 'KOR'}
 
 
 #%% Prepare DataFrames

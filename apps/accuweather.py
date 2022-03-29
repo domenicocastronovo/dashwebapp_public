@@ -213,8 +213,7 @@ def box_plot(city_list, start_date, end_date):
     for city in dropdown_value:
         box.add_trace(go.Box(y=df_merged_copy[city], name=city))
     
-    box.update_layout(yaxis_title = str(dropdown_value), 
-                      title = 'Historical Temperature (Celsius) Data BoxPlot')
+    box.update_layout(title = 'Historical Temperature (Celsius) Data BoxPlot')
         
     return box
 

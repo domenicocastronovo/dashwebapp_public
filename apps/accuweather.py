@@ -14,6 +14,7 @@ import datetime as dt
 import pathlib
 from app import app
 
+
 import plotly.graph_objects as go
 
 #%% Page Structure and TODO
@@ -45,12 +46,16 @@ PATH = pathlib.Path(__file__).parent
 DATA_PATH = PATH.joinpath("../datasets").resolve()
 
 dfh = pd.read_csv(DATA_PATH.joinpath("hist.csv"), index_col=0)
-dfh.index = pd.to_datetime(dfh.index)
+dfh.index = dfh.reset_index()['index'].apply(lambda x: x.split('+')[0]) # Here we need to format the DateTime string, we need to delete the "+hh:mm" part, otherwise the timezone assignment fails
+dfh.index = pd.to_datetime(dfh.index, utc=False)
+dfh.index = dfh.index.tz_localize('CET')
 dfh = dfh.loc[~dfh.index.duplicated()]
 dfh.sort_index(inplace=True)
 
 dff = pd.read_csv(DATA_PATH.joinpath("fc.csv"), index_col=0)
-dff.index = pd.to_datetime(dff.index)
+dff.index = dff.reset_index()['index'].apply(lambda x: x.split('+')[0]) # Here we need to format the DateTime string, we need to delete the "+hh:mm" part, otherwise the timezone assignment fails
+dff.index = pd.to_datetime(dff.index, utc=False)
+dff.index = dff.index.tz_localize('CET')
 dff = dff.add_prefix('fc_')
 dff = dff.loc[~dff.index.duplicated(keep='last')] # to be fixed
 dff.sort_index(inplace=True)

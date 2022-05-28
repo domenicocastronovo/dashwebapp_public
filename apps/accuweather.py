@@ -46,12 +46,16 @@ PATH = pathlib.Path(__file__).parent
 DATA_PATH = PATH.joinpath("../datasets").resolve()
 
 dfh = pd.read_csv(DATA_PATH.joinpath("hist.csv"), index_col=0)
-dfh.index = pd.to_datetime(dfh.index)
+dfh.index = dfh.reset_index()['index'].apply(lambda x: x.split('+')[0]) # Here we need to format the DateTime string, we need to delete the "+hh:mm" part, otherwise the timezone assignment fails
+dfh.index = pd.to_datetime(dfh.index, utc=False)
+dfh.index = dfh.index.tz_localize('CET')
 dfh = dfh.loc[~dfh.index.duplicated()]
 dfh.sort_index(inplace=True)
 
 dff = pd.read_csv(DATA_PATH.joinpath("fc.csv"), index_col=0)
-dff.index = pd.to_datetime(dff.index)
+dff.index = dff.reset_index()['index'].apply(lambda x: x.split('+')[0]) # Here we need to format the DateTime string, we need to delete the "+hh:mm" part, otherwise the timezone assignment fails
+dff.index = pd.to_datetime(dff.index, utc=False)
+dff.index = dff.index.tz_localize('CET')
 dff = dff.add_prefix('fc_')
 dff = dff.loc[~dff.index.duplicated(keep='last')] # to be fixed
 dff.sort_index(inplace=True)
@@ -102,7 +106,7 @@ layout = html.Div([
                                      max_date_allowed=dff.index.max(),
                                      initial_visible_month=dff.index.min(),
                                      end_date=dff.index.max(),
-                                     start_date=dfh.index.max() - dt.timedelta(days=7)
+                                     start_date=dfh.index.max() - dt.timedelta(days=7*4)
         ), className='six columns'),
         
     ], className='row'),
@@ -121,7 +125,7 @@ layout = html.Div([
 
     html.Div([
         html.Div(dcc.Dropdown(
-            id='city-dropdown-multiple', value=['Athens', 'Berlin', 'Paris', 'Rome'], clearable=False,
+            id='city-dropdown-multiple', value=[i for i in dfh.columns], clearable=False,
             options=[{'label': x, 'value': x} for x in sorted([i for i in dfh.columns])],
             multi=True
         ), className='six columns'),        
@@ -209,8 +213,7 @@ def box_plot(city_list, start_date, end_date):
     for city in dropdown_value:
         box.add_trace(go.Box(y=df_merged_copy[city], name=city))
     
-    box.update_layout(yaxis_title = str(dropdown_value), 
-                      title = 'Historical Temperature (Celsius) Data BoxPlot')
+    box.update_layout(title = 'Historical Temperature (Celsius) Data BoxPlot')
         
     return box
 

@@ -14,23 +14,9 @@ import datetime as dt
 import pathlib
 from app import app
 
-
 import plotly.graph_objects as go
 
-#%% Page Structure and TODO
 
-'''
-Structure and TODOs
-
-- Headline
-- Description explaining what they are seeing and why I did it.
-- city filter | DateTime Filter.
-- comparison plot.
-- historical plot (?) Historical is already in comparison plot. Maybe pull more historical if api allows.
-- Table of errors and more statistics.
-- Map of with MAE.
-
-'''
 #%% Alpha ISO 3
 
 iso = {'Athens':'GRC', 'Berlin':'DEU', 'Paris':'FRA', 'Rome':'ITA',
@@ -41,35 +27,41 @@ iso = {'Athens':'GRC', 'Berlin':'DEU', 'Paris':'FRA', 'Rome':'ITA',
 
 #%% Prepare DataFrames
 
-# get relative data folder
-PATH = pathlib.Path(__file__).parent
+def import_clean_raw_data(path):
+    dfh = pd.read_csv(DATA_PATH.joinpath("hist.csv"), index_col=0)
+    dfh.index = dfh.reset_index()['index'].apply(lambda x: x.split('+')[0]) # Here we need to format the DateTime string, we need to delete the "+hh:mm" part, otherwise the timezone assignment fails
+    dfh.index = pd.to_datetime(dfh.index, utc=False)
+    dfh.index = dfh.index.tz_localize('CET')
+    dfh = dfh.loc[~dfh.index.duplicated()]
+    dfh.sort_index(inplace=True)
+    
+    dff = pd.read_csv(DATA_PATH.joinpath("fc.csv"), index_col=0)
+    dff.index = dff.reset_index()['index'].apply(lambda x: x.split('+')[0]) # Here we need to format the DateTime string, we need to delete the "+hh:mm" part, otherwise the timezone assignment fails
+    dff.index = pd.to_datetime(dff.index, utc=False)
+    dff.index = dff.index.tz_localize('CET')
+    dff = dff.add_prefix('fc_')
+    dff = dff.loc[~dff.index.duplicated(keep='last')] # to be fixed
+    dff.sort_index(inplace=True)
+    
+    df_merged_noindex = pd.merge(dfh, dff, left_on=dfh.index, right_on=dff.index, how='inner').rename(columns = {'key_0':'DateTimeCET'}).set_index('DateTimeCET')
+    df_merged_noindex.sort_index(inplace=True)
+    
+    df_merged = pd.DataFrame(index=pd.date_range(start=df_merged_noindex.index.min(),
+                                                 end=df_merged_noindex.index.max(),
+                                                 freq='H'))
+    df_merged = pd.merge(df_merged, df_merged_noindex, left_on=df_merged.index, 
+                         right_on=df_merged_noindex.index, how='outer').rename(columns = {'key_0':'DateTimeCET'}).set_index('DateTimeCET')
+    df_merged.fc_query = df_merged.fc_query.ffill()
+    
+    return df_merged
+
+#%% Define Global Variables
+
+PATH = pathlib.Path(__file__).parent # get relative data folder
 DATA_PATH = PATH.joinpath("../datasets").resolve()
 
-dfh = pd.read_csv(DATA_PATH.joinpath("hist.csv"), index_col=0)
-dfh.index = dfh.reset_index()['index'].apply(lambda x: x.split('+')[0]) # Here we need to format the DateTime string, we need to delete the "+hh:mm" part, otherwise the timezone assignment fails
-dfh.index = pd.to_datetime(dfh.index, utc=False)
-dfh.index = dfh.index.tz_localize('CET')
-dfh = dfh.loc[~dfh.index.duplicated()]
-dfh.sort_index(inplace=True)
-
-dff = pd.read_csv(DATA_PATH.joinpath("fc.csv"), index_col=0)
-dff.index = dff.reset_index()['index'].apply(lambda x: x.split('+')[0]) # Here we need to format the DateTime string, we need to delete the "+hh:mm" part, otherwise the timezone assignment fails
-dff.index = pd.to_datetime(dff.index, utc=False)
-dff.index = dff.index.tz_localize('CET')
-dff = dff.add_prefix('fc_')
-dff = dff.loc[~dff.index.duplicated(keep='last')] # to be fixed
-dff.sort_index(inplace=True)
-
-df_merged_noindex = pd.merge(dfh, dff, left_on=dfh.index, right_on=dff.index, how='inner').rename(columns = {'key_0':'DateTimeCET'}).set_index('DateTimeCET')
-df_merged_noindex.sort_index(inplace=True)
-
-df_merged = pd.DataFrame(index=pd.date_range(start=df_merged_noindex.index.min(),
-                                             end=df_merged_noindex.index.max(),
-                                             freq='H'))
-df_merged = pd.merge(df_merged, df_merged_noindex, left_on=df_merged.index, 
-                     right_on=df_merged_noindex.index, how='outer').rename(columns = {'key_0':'DateTimeCET'}).set_index('DateTimeCET')
-df_merged.fc_query = df_merged.fc_query.ffill()
-
+df_merged = import_clean_raw_data(path = DATA_PATH)
+cities = [i for i in df_merged.columns if '_' not in i]
 
 #%% Dash-Plotly
 
@@ -96,25 +88,23 @@ layout = html.Div([
     html.Div([
         html.Div(dcc.Dropdown(
             id='city-dropdown', value='Athens', clearable=False,
-            options=[{'label': x, 'value': x} for x in sorted([i for i in dfh.columns])],
+            options=[{'label': x, 'value': x} for x in sorted([i for i in cities])],
             multi=False
         ), className='six columns'),
     
         
         html.Div(dcc.DatePickerRange(id='date-range',
-                                     min_date_allowed=dfh.index.min(),
-                                     max_date_allowed=dff.index.max(),
-                                     initial_visible_month=dff.index.min(),
-                                     end_date=dff.index.max(),
-                                     start_date=dfh.index.max() - dt.timedelta(days=7*5)
+                                     min_date_allowed=df_merged.index.min(),
+                                     max_date_allowed=df_merged.index.max(),
+                                     initial_visible_month=df_merged.index.min(),
+                                     end_date=df_merged.index.max(),
+                                     start_date=df_merged.index.max() - dt.timedelta(days=7*4)
         ), className='six columns'),
         
     ], className='row'),
 
     dcc.Graph(id='plot-comparison', figure={}),
-    
-    
-    # dcc.Graph(id='plot-historical', figure={}),
+        
     html.H1('______', style={"textAlign": "center"}),
     html.H5('''
             This Section shows descriptive statistics for both 12 hours forecast and historical data.
@@ -125,8 +115,8 @@ layout = html.Div([
 
     html.Div([
         html.Div(dcc.Dropdown(
-            id='city-dropdown-multiple', value=[i for i in dfh.columns], clearable=False,
-            options=[{'label': x, 'value': x} for x in sorted([i for i in dfh.columns])],
+            id='city-dropdown-multiple', value=[i for i in cities], clearable=False,
+            options=[{'label': x, 'value': x} for x in sorted([i for i in cities])],
             multi=True
         ), className='six columns'),        
     ], className='row'),
@@ -136,9 +126,11 @@ layout = html.Div([
     dcc.Graph(id='table-comparison-maes', figure={}),
     dcc.Graph(id='choro-mae-map', figure={}),
 
-            
 ])
 
+            
+#%% Callbacks
+            
 @app.callback(
     Output(component_id='plot-comparison', component_property='figure'),
     Input(component_id='city-dropdown', component_property='value'),
@@ -165,32 +157,16 @@ def comparison(city_chosen, start_date, end_date):
                               mode='lines+markers', name=dropdown_value[0]))
     fig.add_trace(go.Scatter(x=df_merged_copy.index, y=df_merged_copy[dropdown_value[1]],
                               mode='lines+markers', name=dropdown_value[1]))
-    for query in df_merged_copy.fc_query.unique():
-        fig.add_vline(x=pd.to_datetime(query), line_width=2, line_dash="dash", line_color="green")
-        
+    
+    if len(df_merged_copy.fc_query.unique())<60:
+        for query in df_merged_copy.fc_query.unique():
+            fig.add_vline(x=pd.to_datetime(query), line_width=2, line_dash="dash", line_color="green")
+            
     fig.update_layout(yaxis_title = 'Celsius Degrees', 
                       title = 'Front 12 Hours Forecast and Historical Temperature (Celsius) Data Comparison ***The green vertical line represents the Datetime at which the 12 hours forecast was pulled from the data provider***')
     
     return fig
 
-# @app.callback(
-#     Output(component_id='plot-historical', component_property='figure'),
-#     Input(component_id='city-dropdown', component_property='value'),
-#     Input(component_id='date-range', component_property='start_date'),
-#     Input(component_id='date-range', component_property='end_date')
-# )
-# def historical(city_chosen, start_date, end_date):
-#     # print(city_chosen)
-#     dropdown_value = [i for i in dfh.columns if str(city_chosen) in i]
-#     # print(dropdown_value)
-#     df_merged_copy = dfh.copy()
-#     df_merged_copy = dfh[dropdown_value]
-    
-#     df_merged_copy = df_merged_copy.loc[(df_merged_copy.index >= start_date) & (df_merged_copy.index <= end_date)]
-#     # print(df_merged_copy)
-#     fig = px.line(df_merged_copy, x=df_merged_copy.index, y=city_chosen, title='Historical Values', markers=True)
-#     fig.update_layout(yaxis_title='Historical Value')
-#     return fig
 
 @app.callback(
     Output(component_id='boxplot-comparison', component_property='figure'),

@@ -1,6 +1,7 @@
 .spyproject
 __pycache__
-archive
+
+
 venv
 *.pyc
 .env
@@ -8,3 +9,10 @@ venv
 weather_scrape_agg.py
 hist_data.py
 fc12h_data.py
+
+*.pyc
+.env
+.pkl
+
+archive
+

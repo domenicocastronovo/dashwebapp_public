@@ -1,7 +1,6 @@
 .spyproject
 __pycache__
 
-
 venv
 *.pyc
 .env
@@ -14,5 +13,4 @@ fc12h_data.py
 .env
 .pkl
 
-archive
 
